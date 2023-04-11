@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import styled from '@emotion/styled';
 import { Configuration, OpenAIApi } from 'openai';
-import { useState } from 'react';
 
 const configuration = new Configuration({
   organization: 'org-dae9G7eyl7ExC8zTgBM9obqR',
