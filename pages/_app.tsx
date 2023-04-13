@@ -10,6 +10,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <Global styles={globalStyle} />
       <AppStyle>
         <Component {...pageProps} />
+        <div id="modal-root" />
       </AppStyle>
     </ThemeProvider>
   );

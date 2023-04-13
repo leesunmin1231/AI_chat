@@ -1,13 +1,15 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
 import Router from 'next/router';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import MainLogo from '@/components/MainLogo';
+import Modal from '@/components/Modal';
 import { httpGet } from '@/utils/http';
 
 export default function Login() {
+  const [modalCotent, setModalContent] = useState('');
   const apiKeyRef = useRef<HTMLInputElement | null>(null);
   const onClickHandler = () => {
     const apiKey = apiKeyRef.current ? apiKeyRef.current.value : '';
@@ -16,7 +18,7 @@ export default function Login() {
         Router.push('/chatting-room');
       })
       .catch((e) => {
-        alert(e);
+        setModalContent(String(e));
       });
   };
   return (
@@ -33,6 +35,12 @@ export default function Login() {
           KEY 발급받는 방법
         </Link>
       </Footer>
+      <Modal isOpen={!!modalCotent} onClose={() => setModalContent('')}>
+        <Content>{modalCotent}</Content>
+        <Button size="small" onClick={() => setModalContent('')}>
+          close
+        </Button>
+      </Modal>
     </Wrapper>
   );
 }
@@ -61,4 +69,9 @@ const Footer = styled.footer`
     color: ${({ theme }) => theme.color.white};
     text-decoration: underline;
   }
+`;
+
+const Content = styled.div`
+  min-height: 50px;
+  padding-bottom: 30px;
 `;
