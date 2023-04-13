@@ -7,7 +7,7 @@ export default function Login() {
   return (
     <div>
       <MainLogo />
-      <Input />
+      <Input id="api-key" label="API KEY" />
       <Button size="large">Login</Button>
     </div>
   );

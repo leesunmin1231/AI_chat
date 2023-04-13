@@ -32,7 +32,7 @@ export default function Button({ size, children, isDelete = false }: ButtonProps
 
 const ButtonWrapper = styled.button`
   white-space: nowrap;
-  border-radius: 8px;
+  border-radius: 5px;
   border: 0;
   cursor: pointer;
   @media (hover: hover) {

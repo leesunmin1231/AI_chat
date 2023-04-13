@@ -10,6 +10,12 @@
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     ],
+    "jsx-a11y/label-has-associated-control": [
+      2,
+      {
+        "labelAttributes": ["htmlFor"]
+      }
+    ],
     "react-hooks/exhaustive-deps": "off",
     "react/react-in-jsx-scope": "off",
     "import/prefer-default-export": "off",
