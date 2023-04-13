@@ -10,7 +10,7 @@ interface ButtonProps {
 }
 
 export default function Button({ size, children, isDelete = false }: ButtonProps) {
-  const font = size === 'small' ? FONT.body : FONT.subtitle;
+  const font = size === 'small' ? FONT.body : FONT.title;
   const { color: themeColor } = useTheme();
   const { red, primary, black } = themeColor;
   return (
@@ -21,8 +21,8 @@ export default function Button({ size, children, isDelete = false }: ButtonProps
         fontWeight: font.weight,
         color: black,
         backgroundColor: isDelete ? red : primary,
-        width: size === 'small' ? '50px' : '250px',
-        height: size === 'small' ? '30px' : '40px',
+        width: size === 'small' ? '50px' : '300px',
+        height: size === 'small' ? '30px' : '50px',
       }}
     >
       {children}

@@ -29,9 +29,10 @@ const Label = styled.label`
 const InputBox = styled.input`
   border: 1px solid ${({ theme }) => theme.color.gray400};
   border-radius: 5px;
-  width: 250px;
-  height: 40px;
+  width: 300px;
+  height: 50px;
   color: ${({ theme }) => theme.color.white};
+  ${subtitle}
   background-color: ${({ theme }) => theme.color.black};
   &:focus {
     outline: none;

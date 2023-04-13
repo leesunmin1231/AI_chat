@@ -6,7 +6,7 @@ export const COLOR = {
   gray400: '#566573',
   black: '#101010',
   lightblack: '#131313',
-  white: '#FEFEFE',
+  white: '#f7f7f7',
   offwhite: '#FCFCFC',
   red: '#f66969',
 } as const;
