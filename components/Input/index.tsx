@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef, Ref } from 'react';
 import styled from '@emotion/styled';
 import { subtitle } from '@/styles/mixin';
 
@@ -7,14 +7,12 @@ interface InputProps {
   label: string;
 }
 
-export default function Input({ id, label }: InputProps) {
-  return (
-    <Wrapper>
-      <Label htmlFor={id}>{label}</Label>
-      <InputBox type="text" name={id} id={id} />
-    </Wrapper>
-  );
-}
+const Input = forwardRef(({ id, label }: InputProps, ref: Ref<HTMLInputElement>) => (
+  <Wrapper>
+    <Label htmlFor={id}>{label}</Label>
+    <InputBox type="text" name={id} {...{ id, ref }} />
+  </Wrapper>
+));
 
 const Wrapper = styled.div`
   display: flex;
@@ -39,3 +37,5 @@ const InputBox = styled.input`
     border: 1px solid ${({ theme }) => theme.color.white};
   }
 `;
+
+export default Input;

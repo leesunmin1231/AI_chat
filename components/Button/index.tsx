@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactEventHandler, ReactNode } from 'react';
 import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
 import { FONT } from '@/styles/font';
@@ -6,10 +6,11 @@ import { FONT } from '@/styles/font';
 interface ButtonProps {
   size: 'small' | 'large';
   isDelete?: boolean | undefined;
+  onClick?: ReactEventHandler;
   children: ReactNode;
 }
 
-export default function Button({ size, children, isDelete = false }: ButtonProps) {
+export default function Button({ size, children, onClick, isDelete = false }: ButtonProps) {
   const font = size === 'small' ? FONT.body : FONT.title;
   const { color: themeColor } = useTheme();
   const { red, primary, black } = themeColor;
@@ -24,6 +25,7 @@ export default function Button({ size, children, isDelete = false }: ButtonProps
         width: size === 'small' ? '50px' : '300px',
         height: size === 'small' ? '30px' : '50px',
       }}
+      {...{ onClick }}
     >
       {children}
     </ButtonWrapper>

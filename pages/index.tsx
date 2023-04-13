@@ -1,17 +1,32 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
+import Router from 'next/router';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import MainLogo from '@/components/MainLogo';
+import { httpGet } from '@/utils/http';
 
 export default function Login() {
+  const apiKeyRef = useRef<HTMLInputElement | null>(null);
+  const onClickHandler = () => {
+    const apiKey = apiKeyRef.current ? apiKeyRef.current.value : '';
+    httpGet('/api/login', { apiKey })
+      .then(() => {
+        Router.push('/chatting-room');
+      })
+      .catch((e) => {
+        alert(e);
+      });
+  };
   return (
     <Wrapper>
       <MainLogo />
       <LoginForm>
-        <Input id="api-key" label="API KEY" />
-        <Button size="large">Login</Button>
+        <Input id="api-key" label="API KEY" ref={apiKeyRef} />
+        <Button size="large" onClick={onClickHandler}>
+          Login
+        </Button>
       </LoginForm>
       <Footer>
         <Link href="https://platform.openai.com/docs/api-reference/authentication" target="_blank">
