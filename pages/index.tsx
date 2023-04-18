@@ -6,14 +6,14 @@ import Button from '@/components/Button';
 import Input from '@/components/Input';
 import MainLogo from '@/components/MainLogo';
 import Modal from '@/components/Modal';
-import { httpGet } from '@/utils/http';
+import { httpPost } from '@/utils/http';
 
 export default function Login() {
   const [modalCotent, setModalContent] = useState('');
   const apiKeyRef = useRef<HTMLInputElement | null>(null);
   const onClickHandler = () => {
     const apiKey = apiKeyRef.current ? apiKeyRef.current.value : '';
-    httpGet('/api/login', { apiKey })
+    httpPost('/api/login', { apiKey })
       .then(() => {
         Router.push('/select-room');
       })
