@@ -7,7 +7,7 @@ import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import Room from '@/components/SelectRoom/Room';
 import RoomForm from '@/components/SelectRoom/RoomForm';
-import { httpGet, httpPost, httpPut } from '@/utils/http';
+import { httpDelete, httpGet, httpPost, httpPut } from '@/utils/http';
 
 const initRoomForm = { id: '', name: '', people: '' };
 
@@ -34,6 +34,11 @@ export default function SelectRoom() {
       setRoomList(response.list);
     });
   };
+  const deleteRoomHandler = () => {
+    httpDelete(`/api/roomlist?id=${roomForm.id}`).then((response) => {
+      setRoomList(response.list);
+    });
+  };
   return (
     <Wrapper>
       <Header>
@@ -57,7 +62,7 @@ export default function SelectRoom() {
           <Modal isOpen={!!roomForm.id} onClose={() => setRoomForm(initRoomForm)}>
             <RoomForm {...{ setRoomForm, roomForm }} />
             <Footer>
-              <Button size="small" isDelete>
+              <Button size="small" isDelete onClick={deleteRoomHandler}>
                 삭제
               </Button>
               <Button size="small" onClick={updateRoomHandler}>

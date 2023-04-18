@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
   if (req.method === 'DELETE') {
     const { id } = req.query;
-    ROOM_LIST = ROOM_LIST.filter((room) => room.id === id);
+    ROOM_LIST = ROOM_LIST.filter((room) => room.id !== id);
     res.status(200).json({ message: 'success', list: ROOM_LIST });
   }
 }
