@@ -2,10 +2,10 @@ import React, { useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
 import Router from 'next/router';
-import Button from '@/components/Button';
-import Input from '@/components/Input';
-import MainLogo from '@/components/MainLogo';
-import Modal from '@/components/Modal';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
+import Modal from '@/components/common/Modal';
+import MainLogo from '@/components/Login/MainLogo';
 import { httpPost } from '@/utils/http';
 
 export default function Login() {

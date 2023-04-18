@@ -2,22 +2,24 @@ import React, { useEffect, useState, useRef } from 'react';
 import { HiOutlinePlus, HiOutlineMinus } from 'react-icons/hi';
 import styled from '@emotion/styled';
 import Image from 'next/image';
-import Button from '@/components/Button';
-import RoomForm from '@/components/RoomForm';
+import Button from '@/components/common/Button';
+import Room from '@/components/SelectRoom/Room';
+import RoomForm from '@/components/SelectRoom/RoomForm';
 import { httpGet, httpPost } from '@/utils/http';
 
-type Room = {
+type RoomType = {
   name: string;
   people: number;
 };
+
 export default function SelectRoom() {
-  const [roomList, setRoomList] = useState<Room[]>([]);
+  const [roomList, setRoomList] = useState<RoomType[]>([]);
   const [addNewRoom, setAddNewRoom] = useState(false);
   const roomName = useRef<HTMLInputElement | null>(null);
   const roomTotal = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     httpGet('/api/roomlist').then((data) => setRoomList(data.list));
-  });
+  }, []);
   const addRoomHandler = () => {
     setAddNewRoom(!addNewRoom);
   };
@@ -42,12 +44,11 @@ export default function SelectRoom() {
           </Button>
         </Section>
       ) : (
-        roomList.map((room) => (
-          <li>
-            <span>{room.name}</span>
-            <span>{room.people}</span>
-          </li>
-        ))
+        <Section>
+          {roomList.map((room) => (
+            <Room {...{ ...room }} />
+          ))}
+        </Section>
       )}
     </Wrapper>
   );

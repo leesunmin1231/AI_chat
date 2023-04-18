@@ -1,6 +1,6 @@
 import React, { RefObject } from 'react';
 import styled from '@emotion/styled';
-import Input from '../Input';
+import Input from '../../common/Input';
 
 interface RoomFormProps {
   roomTotal: RefObject<HTMLInputElement>;
