@@ -10,6 +10,7 @@ export default function Chat() {
   const [send, setSend] = useState('');
   const router = useRouter();
   const { id } = router.query;
+  console.log(id);
   const requestOpenai = async () => {
     httpPost('/api/openai', { message: send }).then((response) => setMessage(response.ai_response));
   };

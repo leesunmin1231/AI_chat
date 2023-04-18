@@ -1,7 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { Configuration, OpenAIApi } from 'openai';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { ORGANIZATION_ID } from '@/db';
 import { setCookie } from '@/utils/cookies';
 
 type Data = {
@@ -17,15 +16,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (req.method === 'POST') {
     const bodyData: RequestBody = req.body;
     const configuration = new Configuration({
-      organization: ORGANIZATION_ID,
       apiKey: bodyData.apiKey,
     });
     const openai = new OpenAIApi(configuration);
     openai
       .listFiles()
       .then(() => {
-        setCookie(res, 'Auth', ORGANIZATION_ID, { path: '/', maxAge: 2592000 });
-        res.status(200).json({ message: 'success', org_id: ORGANIZATION_ID });
+        setCookie(res, 'Auth', bodyData.apiKey, { path: '/', maxAge: 2592000 });
+        res.status(200).json({ message: 'success' });
       })
       .catch((response) => {
         res.status(401).json({ message: response.message });

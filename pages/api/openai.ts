@@ -15,8 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (req.method === 'POST') {
     const bodyData: RequestBody = req.body;
     const { cookie } = req.headers;
-    const orgId = cookie ? cookie.split('=').at(1) : '';
-    const configuration = new Configuration({ organization: orgId, apiKey: process.env.NEXT_PUBLIC_API_KEY });
+    const apiKey = cookie ? cookie.split('=').at(1) : '';
+    const configuration = new Configuration({ apiKey });
     const openai = new OpenAIApi(configuration);
     openai
       .createChatCompletion({

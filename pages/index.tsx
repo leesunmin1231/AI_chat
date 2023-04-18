@@ -13,8 +13,7 @@ export default function Login() {
   const [apiKey, setApiKey] = useState('');
   const onClickHandler = () => {
     httpPost('/api/login', { apiKey })
-      .then((response) => {
-        localStorage.setItem('org_id', response.org_id);
+      .then(() => {
         Router.push('/select-room');
       })
       .catch((e) => {
