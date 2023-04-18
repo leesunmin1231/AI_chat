@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { RefObject } from 'react';
 import styled from '@emotion/styled';
 import Input from '../Input';
 
-export default function RoomForm() {
+interface RoomFormProps {
+  roomTotal: RefObject<HTMLInputElement>;
+  roomName: RefObject<HTMLInputElement>;
+}
+
+export default function RoomForm({ roomTotal, roomName }: RoomFormProps) {
   return (
     <Wrapper>
-      <Input id="room-name" label="방 이름" />
-      <Input id="room-people" label="방 인원" />
+      <Input id="room-name" label="방 이름" ref={roomName} />
+      <Input id="room-people" label="방 인원" ref={roomTotal} />
     </Wrapper>
   );
 }

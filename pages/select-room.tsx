@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { HiOutlinePlus, HiOutlineMinus } from 'react-icons/hi';
 import styled from '@emotion/styled';
 import Image from 'next/image';
+import Button from '@/components/Button';
 import RoomForm from '@/components/RoomForm';
 import { httpGet, httpPost } from '@/utils/http';
 
@@ -12,11 +13,20 @@ type Room = {
 export default function SelectRoom() {
   const [roomList, setRoomList] = useState<Room[]>([]);
   const [addNewRoom, setAddNewRoom] = useState(false);
+  const roomName = useRef<HTMLInputElement | null>(null);
+  const roomTotal = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     httpGet('/api/roomlist').then((data) => setRoomList(data.list));
   });
   const addRoomHandler = () => {
     setAddNewRoom(!addNewRoom);
+  };
+  const postRoomHandler = () => {
+    if (!roomName.current || !roomTotal.current) return;
+    const newRoom = { name: roomName.current.value, people: Number(roomTotal.current.value) };
+    httpPost('/api/roomlist', newRoom);
+    setRoomList([...roomList, newRoom]);
+    setAddNewRoom(false);
   };
   return (
     <Wrapper>
@@ -25,7 +35,12 @@ export default function SelectRoom() {
         <AddButton onClick={addRoomHandler}>{addNewRoom ? <HiOutlineMinus /> : <HiOutlinePlus />}</AddButton>
       </Header>
       {addNewRoom ? (
-        <RoomForm />
+        <Section>
+          <RoomForm {...{ roomName, roomTotal }} />
+          <Button size="large" onClick={postRoomHandler}>
+            방 생성
+          </Button>
+        </Section>
       ) : (
         roomList.map((room) => (
           <li>
@@ -51,6 +66,15 @@ const Header = styled.header`
   display: flex;
   justify-content: space-between;
   padding: 10px 30px;
+  align-items: center;
+`;
+
+const Section = styled.section`
+  width: 100%;
+  flex: 1;
+  margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
 `;
 
