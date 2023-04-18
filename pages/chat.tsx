@@ -1,33 +1,27 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
-import { Configuration, OpenAIApi } from 'openai';
+import { useRouter } from 'next/router';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
+import { httpPost } from '@/utils/http';
 
-const configuration = new Configuration({
-  organization: 'org-dae9G7eyl7ExC8zTgBM9obqR',
-  apiKey: process.env.NEXT_PUBLIC_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-export default function Home() {
-  const [message, setMessage] = useState({ role: '', content: '' });
+export default function Chat() {
+  const [message, setMessage] = useState('');
+  const [send, setSend] = useState('');
+  const router = useRouter();
+  const { id } = router.query;
   const requestOpenai = async () => {
-    const completion = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: '노래 추천해줘' }],
-    });
-    const response = completion.data.choices[0].message
-      ? completion.data.choices[0].message
-      : { role: '', content: '' };
-    setMessage(response);
+    httpPost('/api/openai', { message: send }).then((response) => setMessage(response.ai_response));
   };
   return (
     <Wrapper>
-      <button type="button" onClick={requestOpenai}>
-        request chat
-      </button>
       <div>
-        <div>{message.role}</div>
-        <div>{message.content}</div>
+        <div style={{ color: 'white' }}>{message}</div>
       </div>
+      <Input id="chat" label="" onChange={({ target }) => setSend(target.value)} />
+      <Button size="small" onClick={requestOpenai}>
+        전송
+      </Button>
     </Wrapper>
   );
 }
