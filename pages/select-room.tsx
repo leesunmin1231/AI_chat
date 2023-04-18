@@ -4,12 +4,11 @@ import styled from '@emotion/styled';
 import Image from 'next/image';
 import type { RoomType } from '@/types/RoomResponse';
 import Button from '@/components/common/Button';
-import Modal from '@/components/common/Modal';
 import Room from '@/components/SelectRoom/Room';
 import RoomForm from '@/components/SelectRoom/RoomForm';
-import { httpDelete, httpGet, httpPost, httpPut } from '@/utils/http';
-
-const initRoomForm = { id: '', name: '', people: '' };
+import RoomUpdateModal from '@/components/SelectRoom/RoomUpdateModal';
+import { initRoomForm } from '@/utils/constants';
+import { httpGet, httpPost } from '@/utils/http';
 
 export default function SelectRoom() {
   const [roomList, setRoomList] = useState<RoomType[]>([]);
@@ -27,16 +26,6 @@ export default function SelectRoom() {
     httpPost('/api/roomlist', roomForm).then((response) => {
       setRoomList(response.list);
       setAddNewRoom(false);
-    });
-  };
-  const updateRoomHandler = () => {
-    httpPut('/api/roomlist', roomForm).then((response) => {
-      setRoomList(response.list);
-    });
-  };
-  const deleteRoomHandler = () => {
-    httpDelete(`/api/roomlist?id=${roomForm.id}`).then((response) => {
-      setRoomList(response.list);
     });
   };
   return (
@@ -59,17 +48,7 @@ export default function SelectRoom() {
           {roomList.map((room) => (
             <Room key={room.id} {...{ ...room, setRoomForm }} />
           ))}
-          <Modal isOpen={!!roomForm.id} onClose={() => setRoomForm(initRoomForm)}>
-            <RoomForm {...{ setRoomForm, roomForm }} />
-            <Footer>
-              <Button size="small" isDelete onClick={deleteRoomHandler}>
-                삭제
-              </Button>
-              <Button size="small" onClick={updateRoomHandler}>
-                수정
-              </Button>
-            </Footer>
-          </Modal>
+          <RoomUpdateModal {...{ setRoomForm, setRoomList, roomForm }} />
         </Section>
       )}
     </Wrapper>
@@ -122,13 +101,5 @@ const AddButton = styled.button`
   svg {
     width: 100%;
     height: 100%;
-  }
-`;
-const Footer = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: right;
-  button {
-    margin-left: 20px;
   }
 `;
