@@ -1,46 +1,50 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HiOutlinePlus, HiOutlineMinus } from 'react-icons/hi';
 import styled from '@emotion/styled';
 import Image from 'next/image';
+import type { RoomType } from '@/types/RoomResponse';
 import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import Room from '@/components/SelectRoom/Room';
 import RoomForm from '@/components/SelectRoom/RoomForm';
-import { httpGet, httpPost } from '@/utils/http';
+import { httpGet, httpPost, httpPut } from '@/utils/http';
 
-type RoomType = {
-  name: string;
-  people: number;
-};
+const initRoomForm = { id: '', name: '', people: '' };
 
 export default function SelectRoom() {
   const [roomList, setRoomList] = useState<RoomType[]>([]);
-  const [modalInitInputValue, setModalInitInputValue] = useState('');
+  const [roomForm, setRoomForm] = useState<RoomType>(initRoomForm);
   const [addNewRoom, setAddNewRoom] = useState(false);
-  const roomName = useRef<HTMLInputElement | null>(null);
-  const roomTotal = useRef<HTMLInputElement | null>(null);
+
   useEffect(() => {
     httpGet('/api/roomlist').then((data) => setRoomList(data.list));
   }, []);
-  const addRoomHandler = () => {
-    setAddNewRoom(!addNewRoom);
-  };
+  useEffect(() => {
+    setRoomForm(initRoomForm);
+  }, [roomList]);
+
   const postRoomHandler = () => {
-    if (!roomName.current || !roomTotal.current) return;
-    const newRoom = { name: roomName.current.value, people: Number(roomTotal.current.value) };
-    httpPost('/api/roomlist', newRoom);
-    setRoomList([...roomList, newRoom]);
-    setAddNewRoom(false);
+    httpPost('/api/roomlist', roomForm).then((response) => {
+      setRoomList(response.list);
+      setAddNewRoom(false);
+    });
+  };
+  const updateRoomHandler = () => {
+    httpPut('/api/roomlist', roomForm).then((response) => {
+      setRoomList(response.list);
+    });
   };
   return (
     <Wrapper>
       <Header>
         <Image src="/Title.svg" width={100} height={50} alt="title" />
-        <AddButton onClick={addRoomHandler}>{addNewRoom ? <HiOutlineMinus /> : <HiOutlinePlus />}</AddButton>
+        <AddButton onClick={() => setAddNewRoom(!addNewRoom)}>
+          {addNewRoom ? <HiOutlineMinus /> : <HiOutlinePlus />}
+        </AddButton>
       </Header>
       {addNewRoom ? (
         <Section>
-          <RoomForm {...{ roomName, roomTotal }} />
+          <RoomForm {...{ setRoomForm, roomForm }} />
           <Button size="large" onClick={postRoomHandler}>
             방 생성
           </Button>
@@ -48,15 +52,17 @@ export default function SelectRoom() {
       ) : (
         <Section>
           {roomList.map((room) => (
-            <Room {...{ ...room, setModalInitInputValue }} />
+            <Room key={room.id} {...{ ...room, setRoomForm }} />
           ))}
-          <Modal isOpen={!!modalInitInputValue} onClose={() => setModalInitInputValue('')}>
-            <RoomForm {...{ roomName, roomTotal }} initValue={modalInitInputValue} />
+          <Modal isOpen={!!roomForm.id} onClose={() => setRoomForm(initRoomForm)}>
+            <RoomForm {...{ setRoomForm, roomForm }} />
             <Footer>
               <Button size="small" isDelete>
                 삭제
               </Button>
-              <Button size="small">수정</Button>
+              <Button size="small" onClick={updateRoomHandler}>
+                수정
+              </Button>
             </Footer>
           </Modal>
         </Section>

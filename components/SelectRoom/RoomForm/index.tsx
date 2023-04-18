@@ -1,18 +1,37 @@
-import React, { RefObject } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import styled from '@emotion/styled';
 import Input from '../../common/Input';
+import { RoomType } from '@/types/RoomResponse';
 
 interface RoomFormProps {
-  roomTotal: RefObject<HTMLInputElement>;
-  roomName: RefObject<HTMLInputElement>;
-  initValue?: string;
+  roomForm: RoomType;
+  setRoomForm: Dispatch<SetStateAction<RoomType>>;
 }
 
-export default function RoomForm({ roomTotal, roomName, initValue }: RoomFormProps) {
+export default function RoomForm({ roomForm, setRoomForm }: RoomFormProps) {
   return (
     <Wrapper>
-      <Input id="room-name" label="방 이름" ref={roomName} value={initValue && initValue} />
-      <Input id="room-people" label="방 인원" ref={roomTotal} />
+      <Input
+        id="room-name"
+        label="방 이름"
+        value={roomForm.name}
+        onChange={({ target }) => setRoomForm((prev) => ({ ...prev, name: target.value }))}
+      />
+      <Input
+        id="room-people"
+        label="방 인원"
+        value={String(roomForm.people)}
+        onChange={({ target }) => {
+          setRoomForm((prev) => ({
+            ...prev,
+            people: target.value,
+          }));
+        }}
+      >
+        {roomForm.people && !/^[0-9]+$/.test(roomForm.people) && (
+          <Input.Validate>숫자만 입력 가능합니다.</Input.Validate>
+        )}
+      </Input>
     </Wrapper>
   );
 }
@@ -24,7 +43,4 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  div {
-    margin: 15px 0;
-  }
 `;

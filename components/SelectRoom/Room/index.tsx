@@ -1,18 +1,20 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import styled from '@emotion/styled';
+import type { RoomType } from '@/types/RoomResponse';
 import Button from '@/components/common/Button';
 import { subtitle } from '@/styles/mixin';
 
 interface RoomProps {
+  id: string;
   name: string;
-  people: number;
-  setModalInitInputValue: Dispatch<SetStateAction<string>>;
+  people: string;
+  setRoomForm: Dispatch<SetStateAction<RoomType>>;
 }
-export default function Room({ name, people, setModalInitInputValue }: RoomProps) {
+export default function Room({ id, name, people, setRoomForm }: RoomProps) {
   return (
     <Wrapper>
       <Info>{`${name}: ${people}명`}</Info>
-      <Button size="small" onClick={() => setModalInitInputValue(name)}>
+      <Button size="small" onClick={() => setRoomForm({ id, name, people })}>
         수정
       </Button>
     </Wrapper>

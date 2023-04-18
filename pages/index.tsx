@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
 import Router from 'next/router';
@@ -10,9 +10,8 @@ import { httpPost } from '@/utils/http';
 
 export default function Login() {
   const [modalCotent, setModalContent] = useState('');
-  const apiKeyRef = useRef<HTMLInputElement | null>(null);
+  const [apiKey, setApiKey] = useState('');
   const onClickHandler = () => {
-    const apiKey = apiKeyRef.current ? apiKeyRef.current.value : '';
     httpPost('/api/login', { apiKey })
       .then(() => {
         Router.push('/select-room');
@@ -25,7 +24,7 @@ export default function Login() {
     <Wrapper>
       <MainLogo />
       <LoginForm>
-        <Input id="api-key" label="API KEY" ref={apiKeyRef} />
+        <Input id="api-key" label="API KEY" onChange={({ target }) => setApiKey(target.value)} />
         <Button size="large" onClick={onClickHandler}>
           Login
         </Button>

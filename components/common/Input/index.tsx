@@ -1,19 +1,30 @@
-import React, { forwardRef, Ref } from 'react';
+import React, { ChangeEventHandler, ReactNode } from 'react';
 import styled from '@emotion/styled';
-import { subtitle } from '@/styles/mixin';
+import { body, subtitle } from '@/styles/mixin';
 
 interface InputProps {
   id: string;
   label: string;
+  onChange: ChangeEventHandler<HTMLInputElement>;
   value?: string;
+  children?: ReactNode;
 }
 
-const Input = forwardRef(({ id, label, value }: InputProps, ref: Ref<HTMLInputElement>) => (
-  <Wrapper>
-    <Label htmlFor={id}>{label}</Label>
-    <InputBox type="text" name={id} {...{ id, ref, value }} />
-  </Wrapper>
-));
+export default function Input({ id, label, onChange, value, children }: InputProps) {
+  return (
+    <Wrapper>
+      <Label htmlFor={id}>{label}</Label>
+      <InputBox type="text" name={id} {...{ id, onChange, value }} />
+      <div style={{ width: '300px', height: '20px', marginTop: '10px' }}>{children}</div>
+    </Wrapper>
+  );
+}
+
+function Validate({ children }: { children: ReactNode }) {
+  return <ValidateMessage>{children}</ValidateMessage>;
+}
+
+Input.Validate = Validate;
 
 const Wrapper = styled.div`
   display: flex;
@@ -40,4 +51,9 @@ const InputBox = styled.input`
   }
 `;
 
-export default Input;
+const ValidateMessage = styled.div`
+  color: ${({ theme }) => theme.color.white};
+  width: 300px;
+  height: 20px;
+  ${body}
+`;
