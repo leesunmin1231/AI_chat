@@ -16,6 +16,7 @@
         "labelAttributes": ["htmlFor"]
       }
     ],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "react-hooks/exhaustive-deps": "off",
     "react/react-in-jsx-scope": "off",
     "import/prefer-default-export": "off",

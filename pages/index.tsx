@@ -15,7 +15,7 @@ export default function Login() {
     const apiKey = apiKeyRef.current ? apiKeyRef.current.value : '';
     httpGet('/api/login', { apiKey })
       .then(() => {
-        Router.push('/chatting-room');
+        Router.push('/select-room');
       })
       .catch((e) => {
         setModalContent(String(e));
