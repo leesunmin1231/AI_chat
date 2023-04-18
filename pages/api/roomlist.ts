@@ -10,7 +10,7 @@ type Data = {
   list: Room[];
 };
 
-const ROOM_LIST: Room[] = [];
+const ROOM_LIST: Room[] = [{ name: '방 1', people: 1 }];
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   if (req.method === 'GET') {

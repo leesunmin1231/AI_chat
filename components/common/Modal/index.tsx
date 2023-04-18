@@ -25,7 +25,7 @@ const BackGround = styled.div`
   position: fixed;
   z-index: 1;
   display: flex;
-  opacity: 0.4;
+  opacity: 0.7;
   background-color: ${({ theme }) => theme.color.black};
 `;
 
@@ -45,9 +45,9 @@ const ModalBox = styled.aside`
   height: min-content;
   position: relative;
   z-index: 2;
-  padding: 30px 30px;
+  padding: 30px 20px;
   border-radius: 10px;
-  background-color: ${({ theme }) => theme.color.white};
+  background-color: ${({ theme }) => theme.color.lightblack};
   display: flex;
   flex-direction: column;
   justify-content: center;

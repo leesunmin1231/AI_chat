@@ -3,6 +3,7 @@ import { HiOutlinePlus, HiOutlineMinus } from 'react-icons/hi';
 import styled from '@emotion/styled';
 import Image from 'next/image';
 import Button from '@/components/common/Button';
+import Modal from '@/components/common/Modal';
 import Room from '@/components/SelectRoom/Room';
 import RoomForm from '@/components/SelectRoom/RoomForm';
 import { httpGet, httpPost } from '@/utils/http';
@@ -14,6 +15,7 @@ type RoomType = {
 
 export default function SelectRoom() {
   const [roomList, setRoomList] = useState<RoomType[]>([]);
+  const [modalInitInputValue, setModalInitInputValue] = useState('');
   const [addNewRoom, setAddNewRoom] = useState(false);
   const roomName = useRef<HTMLInputElement | null>(null);
   const roomTotal = useRef<HTMLInputElement | null>(null);
@@ -46,8 +48,17 @@ export default function SelectRoom() {
       ) : (
         <Section>
           {roomList.map((room) => (
-            <Room {...{ ...room }} />
+            <Room {...{ ...room, setModalInitInputValue }} />
           ))}
+          <Modal isOpen={!!modalInitInputValue} onClose={() => setModalInitInputValue('')}>
+            <RoomForm {...{ roomName, roomTotal }} initValue={modalInitInputValue} />
+            <Footer>
+              <Button size="small" isDelete>
+                삭제
+              </Button>
+              <Button size="small">수정</Button>
+            </Footer>
+          </Modal>
         </Section>
       )}
     </Wrapper>
@@ -68,6 +79,7 @@ const Header = styled.header`
   justify-content: space-between;
   padding: 10px 30px;
   align-items: center;
+  border-bottom: 1px solid ${({ theme }) => theme.color.gray400};
 `;
 
 const Section = styled.section`
@@ -99,5 +111,13 @@ const AddButton = styled.button`
   svg {
     width: 100%;
     height: 100%;
+  }
+`;
+const Footer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  button {
+    margin-left: 20px;
   }
 `;

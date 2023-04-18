@@ -5,12 +5,13 @@ import { subtitle } from '@/styles/mixin';
 interface InputProps {
   id: string;
   label: string;
+  value?: string;
 }
 
-const Input = forwardRef(({ id, label }: InputProps, ref: Ref<HTMLInputElement>) => (
+const Input = forwardRef(({ id, label, value }: InputProps, ref: Ref<HTMLInputElement>) => (
   <Wrapper>
     <Label htmlFor={id}>{label}</Label>
-    <InputBox type="text" name={id} {...{ id, ref }} />
+    <InputBox type="text" name={id} {...{ id, ref, value }} />
   </Wrapper>
 ));
 
@@ -30,6 +31,7 @@ const InputBox = styled.input`
   width: 300px;
   height: 50px;
   color: ${({ theme }) => theme.color.white};
+  padding-left: 10px;
   ${subtitle}
   background-color: ${({ theme }) => theme.color.black};
   &:focus {

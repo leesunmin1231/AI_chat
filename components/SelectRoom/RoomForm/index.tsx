@@ -5,12 +5,13 @@ import Input from '../../common/Input';
 interface RoomFormProps {
   roomTotal: RefObject<HTMLInputElement>;
   roomName: RefObject<HTMLInputElement>;
+  initValue?: string;
 }
 
-export default function RoomForm({ roomTotal, roomName }: RoomFormProps) {
+export default function RoomForm({ roomTotal, roomName, initValue }: RoomFormProps) {
   return (
     <Wrapper>
-      <Input id="room-name" label="방 이름" ref={roomName} />
+      <Input id="room-name" label="방 이름" ref={roomName} value={initValue && initValue} />
       <Input id="room-people" label="방 인원" ref={roomTotal} />
     </Wrapper>
   );
