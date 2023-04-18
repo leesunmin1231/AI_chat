@@ -1,15 +1,12 @@
 export const COLOR = {
-  primary: '#E6382F',
-
-  progress: '#F7DC6F',
-  complete: '#48C9B0',
+  primary: '#27d9fd',
   gray100: '#EBEDEF',
   gray200: '#E0E0E0',
   gray300: '#D3D3D3',
   gray400: '#566573',
-  black: '#333333',
-  white: '#FEFEFE',
+  black: '#101010',
+  lightblack: '#131313',
+  white: '#f7f7f7',
   offwhite: '#FCFCFC',
-  red: '#E6382F',
-  blue: '#1493FF',
+  red: '#f66969',
 } as const;

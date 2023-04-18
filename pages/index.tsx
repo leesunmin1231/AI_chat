@@ -1,41 +1,77 @@
-import { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { Configuration, OpenAIApi } from 'openai';
+import Link from 'next/link';
+import Router from 'next/router';
+import Button from '@/components/Button';
+import Input from '@/components/Input';
+import MainLogo from '@/components/MainLogo';
+import Modal from '@/components/Modal';
+import { httpPost } from '@/utils/http';
 
-const configuration = new Configuration({
-  organization: 'org-dae9G7eyl7ExC8zTgBM9obqR',
-  apiKey: process.env.NEXT_PUBLIC_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-export default function Home() {
-  const [message, setMessage] = useState({ role: '', content: '' });
-  const requestOpenai = async () => {
-    const completion = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: '노래 추천해줘' }],
-    });
-    const response = completion.data.choices[0].message
-      ? completion.data.choices[0].message
-      : { role: '', content: '' };
-    setMessage(response);
+export default function Login() {
+  const [modalCotent, setModalContent] = useState('');
+  const apiKeyRef = useRef<HTMLInputElement | null>(null);
+  const onClickHandler = () => {
+    const apiKey = apiKeyRef.current ? apiKeyRef.current.value : '';
+    httpPost('/api/login', { apiKey })
+      .then(() => {
+        Router.push('/select-room');
+      })
+      .catch((e) => {
+        setModalContent(String(e));
+      });
   };
   return (
     <Wrapper>
-      <button type="button" onClick={requestOpenai}>
-        request chat
-      </button>
-      <div>
-        <div>{message.role}</div>
-        <div>{message.content}</div>
-      </div>
+      <MainLogo />
+      <LoginForm>
+        <Input id="api-key" label="API KEY" ref={apiKeyRef} />
+        <Button size="large" onClick={onClickHandler}>
+          Login
+        </Button>
+      </LoginForm>
+      <Footer>
+        <Link href="https://platform.openai.com/docs/api-reference/authentication" target="_blank">
+          KEY 발급받는 방법
+        </Link>
+      </Footer>
+      <Modal isOpen={!!modalCotent} onClose={() => setModalContent('')}>
+        <Content>{modalCotent}</Content>
+        <Button size="small" onClick={() => setModalContent('')}>
+          close
+        </Button>
+      </Modal>
     </Wrapper>
   );
 }
 
 const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin: auto;
+`;
+
+const LoginForm = styled.form`
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Footer = styled.footer`
+  height: 8%;
+  padding-top: 4%;
+  a {
+    color: ${({ theme }) => theme.color.white};
+    text-decoration: underline;
+  }
+`;
+
+const Content = styled.div`
+  min-height: 50px;
+  padding-bottom: 30px;
 `;

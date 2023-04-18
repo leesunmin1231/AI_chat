@@ -3,12 +3,20 @@
   "rules": {
     "no-use-before-define": "off",
     "react/jsx-props-no-spreading": "off",
+    "react/require-default-props": "off",
     "react/jsx-filename-extension": [
       1,
       {
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     ],
+    "jsx-a11y/label-has-associated-control": [
+      2,
+      {
+        "labelAttributes": ["htmlFor"]
+      }
+    ],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "react-hooks/exhaustive-deps": "off",
     "react/react-in-jsx-scope": "off",
     "import/prefer-default-export": "off",
@@ -16,7 +24,7 @@
     "import/export": "off",
     "import/extensions": "off",
     "no-underscore-dangle": "off",
-    // 참고: https://db2dev.tistory.com/entry/ESLint-importorder-%EA%B7%9C%EC%B9%99-%EC%84%A4%EC%A0%95%ED%95%98%EA%B3%A0-%EB%92%A4%EC%A3%BD%EB%B0%95%EC%A3%BD-import-%EC%BD%94%EB%93%9C-%EA%B0%9C%EC%84%A0%ED%95%98%EA%B8%B0
+    // https://db2dev.tistory.com/entry/ESLint-importorder-%EA%B7%9C%EC%B9%99-%EC%84%A4%EC%A0%95%ED%95%98%EA%B3%A0-%EB%92%A4%EC%A3%BD%EB%B0%95%EC%A3%BD-import-%EC%BD%94%EB%93%9C-%EA%B0%9C%EC%84%A0%ED%95%98%EA%B8%B0
     "import/order": [
       "error",
       {

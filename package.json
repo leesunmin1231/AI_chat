@@ -17,9 +17,11 @@
     "openai": "^3.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "5.0.3"
+    "typescript": "5.0.3",
+    "react-icons": "^4.8.0"
   },
   "devDependencies": {
+    "@react-theming/storybook-addon": "^1.1.10",
     "@storybook/addon-essentials": "^7.0.2",
     "@storybook/addon-interactions": "^7.0.2",
     "@storybook/addon-links": "^7.0.2",
@@ -34,6 +36,8 @@
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-next": "^13.2.4",
     "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-import-order": "^2.1.4",
     "eslint-plugin-storybook": "^0.6.11",
     "prettier": "^2.8.7",
     "storybook": "^7.0.2"
