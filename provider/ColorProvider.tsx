@@ -11,7 +11,10 @@ function ColorProvider({ children }: ColorProviderProps) {
   return (
     <>
       <Global styles={globalStyle} />
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={theme}>
+        {children}
+        <div id="modal-root" />
+      </ThemeProvider>
     </>
   );
 }
