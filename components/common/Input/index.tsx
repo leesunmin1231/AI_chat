@@ -5,7 +5,7 @@ import { body, subtitle } from '@/styles/mixin';
 
 interface InputProps {
   id: string;
-  label: string;
+  label?: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
   value?: string;
   children?: ReactNode;
@@ -14,7 +14,7 @@ interface InputProps {
   onKeyDown?: KeyboardEventHandler;
 }
 
-export default function Input({ id, label, onChange, value, children, icon, onClick, onKeyDown }: InputProps) {
+export default function Input({ id, label = '', onChange, value, children, icon, onClick, onKeyDown }: InputProps) {
   return (
     <Wrapper>
       <Label htmlFor={id}>{label}</Label>

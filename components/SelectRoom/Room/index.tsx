@@ -14,7 +14,7 @@ interface RoomProps {
 export default function Room({ id, name, people, setRoomForm }: RoomProps) {
   return (
     <Wrapper>
-      <Link href={`/chat?id=${id}`}>
+      <Link href={`/chatting-room?id=${id}`}>
         <Info>{`${name}: ${people}명`}</Info>
       </Link>
       <Button size="small" onClick={() => setRoomForm({ id, name, people })}>
