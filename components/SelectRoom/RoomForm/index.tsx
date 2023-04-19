@@ -4,8 +4,8 @@ import Input from '../../common/Input';
 import { RoomType } from '@/types/RoomResponse';
 
 interface RoomFormProps {
-  roomForm: RoomType;
-  setRoomForm: Dispatch<SetStateAction<RoomType>>;
+  roomForm: Omit<RoomType, 'chatList'>;
+  setRoomForm: Dispatch<SetStateAction<Omit<RoomType, 'chatList'>>>;
 }
 
 export default function RoomForm({ roomForm, setRoomForm }: RoomFormProps) {

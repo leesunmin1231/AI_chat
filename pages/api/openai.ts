@@ -1,13 +1,15 @@
 import { Configuration, OpenAIApi } from 'openai';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { addChat } from '@/db/model';
+import { RoomType } from '@/types/RoomResponse';
 
 type Data = {
   message: string;
-  ai_response?: string;
+  roomData?: RoomType;
 };
 
 type RequestBody = {
-  org_id: string;
+  roomId: string;
   message: string;
 };
 
@@ -16,8 +18,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const bodyData: RequestBody = req.body;
     const { cookie } = req.headers;
     const apiKey = cookie ? cookie.split('=').at(1) : '';
+    if (apiKey === undefined) {
+      res.status(400).json({ message: 'unAutorized' });
+      return;
+    }
     const configuration = new Configuration({ apiKey });
     const openai = new OpenAIApi(configuration);
+    addChat(apiKey, bodyData.roomId, { speaker: 'user', message: bodyData.message });
     openai
       .createChatCompletion({
         model: 'gpt-3.5-turbo',
@@ -25,7 +32,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       })
       .then((completion) => {
         const response = completion.data.choices[0].message ? completion.data.choices[0].message.content : '';
-        res.status(200).json({ message: 'success', ai_response: response });
+        const room = addChat(apiKey, bodyData.roomId, { speaker: 'AI', message: response });
+        res.status(200).json({ message: 'success', roomData: room });
       })
       .catch((response) => {
         res.status(401).json({ message: response.message });

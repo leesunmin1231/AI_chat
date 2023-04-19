@@ -9,7 +9,7 @@ interface RoomProps {
   id: string;
   name: string;
   people: string;
-  setRoomForm: Dispatch<SetStateAction<RoomType>>;
+  setRoomForm: Dispatch<SetStateAction<Omit<RoomType, 'chatList'>>>;
 }
 export default function Room({ id, name, people, setRoomForm }: RoomProps) {
   return (

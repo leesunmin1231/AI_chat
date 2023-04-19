@@ -8,9 +8,9 @@ import { initRoomForm } from '@/utils/constants';
 import { httpPut, httpDelete } from '@/utils/http';
 
 interface RoomUpdateModalProps {
-  roomForm: RoomType;
-  setRoomForm: Dispatch<SetStateAction<RoomType>>;
-  setRoomList: Dispatch<SetStateAction<RoomType[]>>;
+  roomForm: Omit<RoomType, 'chatList'>;
+  setRoomForm: Dispatch<SetStateAction<Omit<RoomType, 'chatList'>>>;
+  setRoomList: Dispatch<SetStateAction<Omit<RoomType, 'chatList'>[]>>;
 }
 
 export default function RoomUpdateModal({ roomForm, setRoomForm, setRoomList }: RoomUpdateModalProps) {

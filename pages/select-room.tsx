@@ -11,8 +11,8 @@ import { initRoomForm } from '@/utils/constants';
 import { httpGet, httpPost } from '@/utils/http';
 
 export default function SelectRoom() {
-  const [roomList, setRoomList] = useState<RoomType[]>([]);
-  const [roomForm, setRoomForm] = useState<RoomType>(initRoomForm);
+  const [roomList, setRoomList] = useState<Omit<RoomType, 'chatList'>[]>([]);
+  const [roomForm, setRoomForm] = useState<Omit<RoomType, 'chatList'>>(initRoomForm);
   const [addNewRoom, setAddNewRoom] = useState(false);
 
   useEffect(() => {

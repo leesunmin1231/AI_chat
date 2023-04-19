@@ -1,18 +1,18 @@
 import { KeyboardEvent, useState } from 'react';
 import styled from '@emotion/styled';
 import { useRouter } from 'next/router';
+import type { ChatResponse } from '@/types/ChatResponse';
 import Input from '@/components/common/Input';
 import { body } from '@/styles/mixin';
 import { httpPost } from '@/utils/http';
 
 export default function ChattingRoom() {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState<ChatResponse[]>([]);
   const [send, setSend] = useState('');
   const router = useRouter();
   const { id } = router.query;
-  console.log(id);
   const requestOpenai = async () => {
-    httpPost('/api/openai', { message: send }).then((response) => setMessage(response.ai_response));
+    httpPost('/api/openai', { roomId: id, message: send }).then((response) => setMessage(response.roomData.chatList));
   };
   const onKeyDownHandler = (e: KeyboardEvent<Element>) => {
     const { key } = e;
@@ -23,7 +23,9 @@ export default function ChattingRoom() {
   return (
     <Wrapper>
       <ChatContainer>
-        <Chat isAI>{message}</Chat>
+        {message.map((data) =>
+          data.speaker === 'AI' ? <Chat isAI>{data.message}</Chat> : <Chat isAI={false}>{data.message}</Chat>
+        )}
       </ChatContainer>
       <SendContainer>
         <Input
@@ -61,7 +63,7 @@ const Chat = styled.div<{ isAI: boolean }>`
   ${body}
   color: ${({ theme }) => theme.color.black};
   background-color: ${({ theme, isAI }) => (isAI ? theme.color.primary : theme.color.offwhite)};
-  float: ${({ isAI }) => (isAI ? 'right' : 'left')};
+  float: ${({ isAI }) => (isAI ? 'left' : 'right')};
   width: fit-content;
   max-width: 200px;
   padding: 15px;

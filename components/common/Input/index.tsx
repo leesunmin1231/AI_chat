@@ -27,7 +27,7 @@ export default function Input({ id, label = '', onChange, value, children, icon,
         />
         {icon && (
           <IconButton type="button" {...{ onClick }}>
-            <Image alt="icon" src={icon} width={25} height={25} />
+            <Image alt="icon" src={icon} width={25} height={25} priority />
           </IconButton>
         )}
       </InputBox>
