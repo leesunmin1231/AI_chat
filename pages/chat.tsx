@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { KeyboardEvent, useState } from 'react';
 import styled from '@emotion/styled';
 import { useRouter } from 'next/router';
-import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import { httpPost } from '@/utils/http';
 
@@ -14,15 +13,25 @@ export default function Chat() {
   const requestOpenai = async () => {
     httpPost('/api/openai', { message: send }).then((response) => setMessage(response.ai_response));
   };
+  const onKeyDownHandler = (e: KeyboardEvent<Element>) => {
+    const { key } = e;
+    if (key === 'Enter') {
+      requestOpenai();
+    }
+  };
   return (
     <Wrapper>
       <div>
         <div style={{ color: 'white' }}>{message}</div>
       </div>
-      <Input id="chat" label="" onChange={({ target }) => setSend(target.value)} />
-      <Button size="small" onClick={requestOpenai}>
-        전송
-      </Button>
+      <Input
+        id="chat"
+        label=""
+        onChange={({ target }) => setSend(target.value)}
+        icon="/sendEmoji.svg"
+        onClick={requestOpenai}
+        onKeyDown={(e) => onKeyDownHandler(e)}
+      />
     </Wrapper>
   );
 }
