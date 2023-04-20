@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       res.status(400).json({ message: 'unAutorized' });
       return;
     }
-    res.status(200).json({ message: 'success', list: updateRoom(apiKey, { ...bodyData }) });
+    res.status(200).json({ message: 'success', list: updateRoom(apiKey, { ...bodyData, chatList: [] }) });
   }
   if (req.method === 'DELETE') {
     const { id } = req.query;

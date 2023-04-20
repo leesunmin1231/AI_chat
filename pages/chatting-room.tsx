@@ -39,6 +39,7 @@ export default function ChattingRoom({ id }: { id: string }) {
     httpGet(`/api/chat?id=${id}`)
       .then((response) => {
         setMessage(response.roomData.chatList);
+        console.log(response);
         setRoomName(response.roomData.name);
       })
       .catch((e) => setErrorMessage(`${e}\n서버에 오류가 발생했습니다.`));
