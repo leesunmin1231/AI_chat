@@ -11,7 +11,9 @@ type Data = {
 
 type RequestBody = {
   roomId: string;
+  speaker: string;
   message: string;
+  sendOpenAI: boolean;
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -25,20 +27,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
     const configuration = new Configuration({ apiKey });
     const openai = new OpenAIApi(configuration);
-    addChat(apiKey, bodyData.roomId, { id: nanoid(), speaker: 'user', message: bodyData.message });
-    openai
-      .createChatCompletion({
+    const prevRoomData =
+      bodyData.speaker === 'user'
+        ? addChat(apiKey, bodyData.roomId, [{ id: nanoid(), speaker: bodyData.speaker, message: bodyData.message }])
+        : getRoomData(apiKey, bodyData.roomId);
+    if (prevRoomData === undefined) {
+      res.status(500).json({ message: 'Server Error' });
+      return;
+    }
+    if (!bodyData.sendOpenAI) {
+      res.status(200).json({ message: 'success', roomData: prevRoomData });
+      return;
+    }
+    try {
+      const completion = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: bodyData.message }],
-      })
-      .then((completion) => {
-        const response = completion.data.choices[0].message ? completion.data.choices[0].message.content : '';
-        const room = addChat(apiKey, bodyData.roomId, { id: nanoid(), speaker: 'AI', message: response });
-        res.status(200).json({ message: 'success', roomData: room });
-      })
-      .catch((response) => {
-        res.status(401).json({ message: response.message });
+        messages: [
+          { role: 'user', content: bodyData.message },
+          { role: 'system', content: '한글로 대답해줘' },
+        ],
+        n: bodyData.speaker === 'user' ? Number(prevRoomData.people) - 1 : Number(prevRoomData.people) - 2,
+        presence_penalty: 1.0,
+        frequency_penalty: 1.0,
       });
+      const room = addChat(
+        apiKey,
+        bodyData.roomId,
+        completion.data.choices.map((choice, index) => ({
+          id: nanoid(),
+          speaker: `AI ${index}`,
+          message: choice.message ? choice.message.content : '',
+        }))
+      );
+      res.status(200).json({ message: 'success', roomData: room });
+    } catch (e: any) {
+      res.status(429).json({ message: e });
+    }
   }
   if (req.method === 'GET') {
     const { cookie } = req.headers;

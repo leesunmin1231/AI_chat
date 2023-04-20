@@ -65,7 +65,7 @@ export const deleteRoom = (apiKey: string, roomId: string) => {
   return userData[0].rooms;
 };
 
-export const addChat = (apiKey: string, roomId: string, newChat: ChatResponse) => {
+export const addChat = (apiKey: string, roomId: string, newChat: ChatResponse[]) => {
   const file = fs.readFileSync(dbPath);
   const prevData: DataBase = JSON.parse(file.toString());
   const userData = prevData.users.filter((user) => user.apiKey === apiKey);

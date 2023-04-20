@@ -20,7 +20,6 @@ export default function SelectRoom() {
     httpGet('/api/roomlist').then((data) => setRoomList(data.list));
   }, []);
   useEffect(() => {
-    console.log('in');
     setRoomForm(initRoomForm);
   }, [roomList]);
 

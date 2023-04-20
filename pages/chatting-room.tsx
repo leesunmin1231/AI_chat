@@ -9,37 +9,80 @@ import { IconButton } from '@/styles/IconButton';
 import { body, title } from '@/styles/mixin';
 import { httpGet, httpPost } from '@/utils/http';
 
+const ERROR_MESSAGE = '요청 횟수가 너무 많습니다.\n잠시 기다린 후에 대화를 보내보세요.';
+
 export default function ChattingRoom({ id }: { id: string }) {
   const [message, setMessage] = useState<ChatResponse[]>([]);
   const [roomName, setRoomName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [clock, setClock] = useState<Date | null>(null);
   const [send, setSend] = useState('');
   const scrollRef: RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
-  const postChat = async () => {
-    if (isLoading) return;
-    setMessage(message.concat({ id: String(Math.random()), speaker: 'user', message: send }));
-    setIsLoading(true);
-    httpPost('/api/chat', { roomId: id, message: send })
-      .then((response) => setMessage(response.roomData.chatList))
-      .catch(() => setErrorMessage('요청 횟수가 너무 많습니다.\n잠시 기다린 후에 대화를 보내보세요.'))
-      .finally(() => {
-        setIsLoading(false);
-        setSend('');
-      });
+
+  const sendMessageHandler = () => {
+    const newMessage = { id: String(Math.random()), speaker: 'user', message: send };
+    setMessage(message.concat(newMessage));
+    postChat(send);
+    setSend('');
   };
-  const onKeyDownHandler = (e: KeyboardEvent<Element>) => {
-    if (e.nativeEvent.isComposing) return;
-    const { key } = e;
-    if (key === 'Enter') {
-      postChat();
+
+  const AIConversation = async (aiMessage: ChatResponse[]) => {
+    if (isLoading) return;
+    const toSend = aiMessage.at(-1);
+    if (toSend) {
+      try {
+        setClock(new Date());
+        const res = await httpPost('/api/chat', {
+          roomId: id,
+          message: toSend.message,
+          speaker: toSend.speaker,
+          sendOpenAI: true,
+        });
+        setMessage(res.roomData.chatList);
+      } catch {
+        setErrorMessage(ERROR_MESSAGE);
+      }
     }
   };
+
+  const postChat = (toSend: string) => {
+    const current = new Date();
+    if (isLoading || (clock && current.getTime() - clock.getTime() <= 60 * 1000)) {
+      httpPost('/api/chat', {
+        roomId: id,
+        message: toSend,
+        speaker: 'user',
+        sendOpenAI: false,
+      })
+        .then((response) => setMessage(response.roomData.chatList))
+        .catch(() => setErrorMessage(ERROR_MESSAGE));
+      return;
+    }
+    setIsLoading(true);
+    setClock(new Date());
+    httpPost('/api/chat', { roomId: id, message: toSend, speaker: 'user', sendOpenAI: true })
+      .then((response) => {
+        setMessage(response.roomData.chatList);
+        AIConversation(response.roomData.chatList);
+      })
+      .catch(() => setErrorMessage(ERROR_MESSAGE))
+      .finally(() => setIsLoading(false));
+  };
+
+  const onKeyDownHandler = (e: KeyboardEvent<Element>) => {
+    if (e.nativeEvent.isComposing) return;
+    if (errorMessage) return;
+    const { key } = e;
+    if (key === 'Enter') {
+      sendMessageHandler();
+    }
+  };
+
   useEffect(() => {
     httpGet(`/api/chat?id=${id}`)
       .then((response) => {
         setMessage(response.roomData.chatList);
-        console.log(response);
         setRoomName(response.roomData.name);
       })
       .catch((e) => setErrorMessage(`${e}\n서버에 오류가 발생했습니다.`));
@@ -59,7 +102,7 @@ export default function ChattingRoom({ id }: { id: string }) {
       </Header>
       <ChatContainer ref={scrollRef}>
         {message.map((data) =>
-          data.speaker === 'AI' ? (
+          data.speaker.includes('AI') ? (
             <Row key={data.id}>
               <Chat isAI>{data.message}</Chat>
             </Row>
@@ -76,10 +119,8 @@ export default function ChattingRoom({ id }: { id: string }) {
           onChange={({ target }) => setSend(target.value)}
           value={send}
           icon="/sendEmoji.svg"
-          onClick={postChat}
+          onClick={sendMessageHandler}
           onKeyDown={(e) => onKeyDownHandler(e)}
-          disabled={isLoading}
-          autoFocus={!isLoading}
         />
       </SendContainer>
       <Error {...{ errorMessage, setErrorMessage }} />
