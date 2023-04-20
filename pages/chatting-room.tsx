@@ -1,23 +1,32 @@
-import { KeyboardEvent, useEffect, useState } from 'react';
+import { KeyboardEvent, useEffect, useState, useRef, RefObject } from 'react';
+import { MdArrowBackIosNew } from 'react-icons/md';
 import styled from '@emotion/styled';
+import Router from 'next/router';
 import type { ChatResponse } from '@/types/ChatResponse';
 import Error from '@/components/common/Error';
 import Input from '@/components/common/Input';
-import { body } from '@/styles/mixin';
+import { IconButton } from '@/styles/IconButton';
+import { body, title } from '@/styles/mixin';
 import { httpGet, httpPost } from '@/utils/http';
 
 export default function ChattingRoom({ id }: { id: string }) {
   const [message, setMessage] = useState<ChatResponse[]>([]);
+  const [roomName, setRoomName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [send, setSend] = useState('');
+  const scrollRef: RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
   const postChat = async () => {
     if (isLoading) return;
+    setMessage(message.concat({ id: String(Math.random()), speaker: 'user', message: send }));
     setIsLoading(true);
     httpPost('/api/chat', { roomId: id, message: send })
       .then((response) => setMessage(response.roomData.chatList))
       .catch(() => setErrorMessage('요청 횟수가 너무 많습니다.\n잠시 기다린 후에 대화를 보내보세요.'))
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        setIsLoading(false);
+        setSend('');
+      });
   };
   const onKeyDownHandler = (e: KeyboardEvent<Element>) => {
     if (e.nativeEvent.isComposing) return;
@@ -28,12 +37,26 @@ export default function ChattingRoom({ id }: { id: string }) {
   };
   useEffect(() => {
     httpGet(`/api/chat?id=${id}`)
-      .then((response) => setMessage(response.roomData.chatList))
+      .then((response) => {
+        setMessage(response.roomData.chatList);
+        setRoomName(response.roomData.name);
+      })
       .catch((e) => setErrorMessage(`${e}\n서버에 오류가 발생했습니다.`));
   }, []);
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [message]);
   return (
     <Wrapper>
-      <ChatContainer>
+      <Header>
+        <IconButton onClick={() => Router.back()}>
+          <MdArrowBackIosNew />
+        </IconButton>
+        <Title>{roomName}</Title>
+      </Header>
+      <ChatContainer ref={scrollRef}>
         {message.map((data) =>
           data.speaker === 'AI' ? (
             <Row key={data.id}>
@@ -50,11 +73,12 @@ export default function ChattingRoom({ id }: { id: string }) {
         <Input
           id="chat"
           onChange={({ target }) => setSend(target.value)}
+          value={send}
           icon="/sendEmoji.svg"
           onClick={postChat}
           onKeyDown={(e) => onKeyDownHandler(e)}
           disabled={isLoading}
-          autoFocus
+          autoFocus={!isLoading}
         />
       </SendContainer>
       <Error {...{ errorMessage, setErrorMessage }} />
@@ -77,17 +101,33 @@ const Wrapper = styled.div`
   height: 100%;
   width: 100%;
 `;
-
+const Header = styled.header`
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: left;
+  padding: 10px 15px;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid ${({ theme }) => theme.color.gray400};
+`;
+const Title = styled.div`
+  ${title}
+  line-height: 30px;
+  margin-top: 5px;
+  margin-left: 10px;
+`;
 const ChatContainer = styled.div`
   flex: 1;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
+  border-bottom: 1px solid ${({ theme }) => theme.color.gray400};
 `;
 
 const SendContainer = styled.div`
   width: 100%;
-  margin-top: 10px;
+  margin-top: 15px;
   display: flex;
   align-items: center;
   justify-content: center;

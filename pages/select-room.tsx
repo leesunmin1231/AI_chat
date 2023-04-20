@@ -7,6 +7,7 @@ import Button from '@/components/common/Button';
 import Room from '@/components/SelectRoom/Room';
 import RoomForm from '@/components/SelectRoom/RoomForm';
 import RoomUpdateModal from '@/components/SelectRoom/RoomUpdateModal';
+import { IconButton } from '@/styles/IconButton';
 import { initRoomForm } from '@/utils/constants';
 import { httpGet, httpPost } from '@/utils/http';
 
@@ -32,9 +33,9 @@ export default function SelectRoom() {
     <Wrapper>
       <Header>
         <Image src="/Title.svg" width={100} height={50} alt="title" />
-        <AddButton onClick={() => setAddNewRoom(!addNewRoom)}>
+        <IconButton onClick={() => setAddNewRoom(!addNewRoom)}>
           {addNewRoom ? <HiOutlineMinus /> : <HiOutlinePlus />}
-        </AddButton>
+        </IconButton>
       </Header>
       {addNewRoom ? (
         <Section>
@@ -79,27 +80,4 @@ const Section = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const AddButton = styled.button`
-  width: 30px;
-  height: 30px;
-  color: ${({ theme }) => theme.color.white};
-  background-color: ${({ theme }) => theme.color.black};
-  border: 0;
-  border-radius: 30px;
-  cursor: pointer;
-  @media (hover: hover) {
-    &:hover {
-      background-color: ${({ theme }) => theme.color.black};
-      filter: brightness(0.7);
-    }
-  }
-  &:active {
-    filter: brightness(0.5);
-  }
-  svg {
-    width: 100%;
-    height: 100%;
-  }
 `;

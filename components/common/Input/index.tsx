@@ -40,7 +40,7 @@ export default function Input({
     if (autoFocus && InputRef.current) {
       InputRef.current.focus();
     }
-  }, [disabled]);
+  }, [autoFocus]);
   return (
     <Wrapper>
       {label && <Label htmlFor={id}>{label}</Label>}
