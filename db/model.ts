@@ -77,3 +77,13 @@ export const addChat = (apiKey: string, roomId: string, newChat: ChatResponse) =
   fs.writeFileSync(dbPath, JSON.stringify({ users: updateData }));
   return roomData.filter((room) => room.id === roomId).at(0);
 };
+
+export const getRoomData = (apiKey: string, roomId: string) => {
+  const file = fs.readFileSync(dbPath);
+  const prevData: DataBase = JSON.parse(file.toString());
+  const userData = prevData.users.filter((user) => user.apiKey === apiKey);
+  if (userData.length === 0) return undefined;
+  const roomData = userData[0].rooms.filter((room) => room.id === roomId);
+  if (roomData.length === 0) return undefined;
+  return roomData[0];
+};

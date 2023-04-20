@@ -22,8 +22,9 @@ export default function Error({ errorMessage, setErrorMessage }: ErrorProps) {
 
 const Content = styled.div`
   min-height: 50px;
+  width: 200px;
   padding-bottom: 30px;
-  white-space: pre;
+  white-space: pre-wrap;
   line-height: 30px;
   ${subtitle}
 `;

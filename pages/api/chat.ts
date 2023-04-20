@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import { Configuration, OpenAIApi } from 'openai';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { addChat } from '@/db/model';
+import { addChat, getRoomData } from '@/db/model';
 import { RoomType } from '@/types/RoomResponse';
 
 type Data = {
@@ -39,5 +39,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       .catch((response) => {
         res.status(401).json({ message: response.message });
       });
+  }
+  if (req.method === 'GET') {
+    const { cookie } = req.headers;
+    const { id } = req.query;
+    const apiKey = cookie ? cookie.split('=').at(1) : '';
+    if (apiKey === undefined) {
+      res.status(400).json({ message: 'unAutorized' });
+      return;
+    }
+    const room = getRoomData(apiKey, (id as string) || '');
+    res.status(200).json({ message: 'success', roomData: room });
   }
 }

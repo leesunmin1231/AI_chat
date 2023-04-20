@@ -1,23 +1,20 @@
-import { KeyboardEvent, useState } from 'react';
+import { KeyboardEvent, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import { useRouter } from 'next/router';
 import type { ChatResponse } from '@/types/ChatResponse';
 import Error from '@/components/common/Error';
 import Input from '@/components/common/Input';
 import { body } from '@/styles/mixin';
-import { httpPost } from '@/utils/http';
+import { httpGet, httpPost } from '@/utils/http';
 
-export default function ChattingRoom() {
+export default function ChattingRoom({ id }: { id: string }) {
   const [message, setMessage] = useState<ChatResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [send, setSend] = useState('');
-  const router = useRouter();
-  const { id } = router.query;
-  const requestOpenai = async () => {
+  const postChat = async () => {
     if (isLoading) return;
     setIsLoading(true);
-    httpPost('/api/openai', { roomId: id, message: send })
+    httpPost('/api/chat', { roomId: id, message: send })
       .then((response) => setMessage(response.roomData.chatList))
       .catch(() => setErrorMessage('요청 횟수가 너무 많습니다.\n잠시 기다린 후에 대화를 보내보세요.'))
       .finally(() => setIsLoading(false));
@@ -26,9 +23,14 @@ export default function ChattingRoom() {
     if (e.nativeEvent.isComposing) return;
     const { key } = e;
     if (key === 'Enter') {
-      requestOpenai();
+      postChat();
     }
   };
+  useEffect(() => {
+    httpGet(`/api/chat?id=${id}`)
+      .then((response) => setMessage(response.roomData.chatList))
+      .catch((e) => setErrorMessage(`${e}\n서버에 오류가 발생했습니다.`));
+  }, []);
   return (
     <Wrapper>
       <ChatContainer>
@@ -49,7 +51,7 @@ export default function ChattingRoom() {
           id="chat"
           onChange={({ target }) => setSend(target.value)}
           icon="/sendEmoji.svg"
-          onClick={requestOpenai}
+          onClick={postChat}
           onKeyDown={(e) => onKeyDownHandler(e)}
           disabled={isLoading}
           autoFocus
@@ -58,6 +60,14 @@ export default function ChattingRoom() {
       <Error {...{ errorMessage, setErrorMessage }} />
     </Wrapper>
   );
+}
+
+export async function getServerSideProps({ query: { id } }: { query: { id: string } }) {
+  return {
+    props: {
+      id,
+    },
+  };
 }
 
 const Wrapper = styled.div`
