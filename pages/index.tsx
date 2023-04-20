@@ -3,13 +3,13 @@ import styled from '@emotion/styled';
 import Link from 'next/link';
 import Router from 'next/router';
 import Button from '@/components/common/Button';
+import Error from '@/components/common/Error';
 import Input from '@/components/common/Input';
-import Modal from '@/components/common/Modal';
 import MainLogo from '@/components/Login/MainLogo';
 import { httpPost } from '@/utils/http';
 
 export default function Login() {
-  const [modalCotent, setModalContent] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [apiKey, setApiKey] = useState('');
   const onClickHandler = () => {
     httpPost('/api/login', { apiKey })
@@ -17,7 +17,7 @@ export default function Login() {
         Router.push('/select-room');
       })
       .catch((e) => {
-        setModalContent(String(e));
+        setErrorMessage(String(e));
       });
   };
   return (
@@ -34,12 +34,7 @@ export default function Login() {
           KEY 발급받는 방법
         </Link>
       </Footer>
-      <Modal isOpen={!!modalCotent} onClose={() => setModalContent('')}>
-        <Content>{modalCotent}</Content>
-        <Button size="small" onClick={() => setModalContent('')}>
-          close
-        </Button>
-      </Modal>
+      <Error {...{ errorMessage, setErrorMessage }} />
     </Wrapper>
   );
 }
@@ -68,9 +63,4 @@ const Footer = styled.footer`
     color: ${({ theme }) => theme.color.white};
     text-decoration: underline;
   }
-`;
-
-const Content = styled.div`
-  min-height: 50px;
-  padding-bottom: 30px;
 `;

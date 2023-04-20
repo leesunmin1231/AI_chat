@@ -1,1 +1,1 @@
-export type ChatResponse = { speaker: string; message: string };
+export type ChatResponse = { id: string; speaker: string; message: string };

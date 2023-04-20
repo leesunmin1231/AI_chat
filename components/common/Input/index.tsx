@@ -1,4 +1,11 @@
-import React, { ChangeEventHandler, ReactNode, MouseEventHandler, KeyboardEventHandler } from 'react';
+import React, {
+  ChangeEventHandler,
+  ReactNode,
+  MouseEventHandler,
+  KeyboardEventHandler,
+  useRef,
+  useEffect,
+} from 'react';
 import styled from '@emotion/styled';
 import Image from 'next/image';
 import { body, subtitle } from '@/styles/mixin';
@@ -12,18 +19,38 @@ interface InputProps {
   icon?: string;
   onClick?: MouseEventHandler;
   onKeyDown?: KeyboardEventHandler;
+  disabled?: boolean;
+  autoFocus?: boolean;
 }
 
-export default function Input({ id, label = '', onChange, value, children, icon, onClick, onKeyDown }: InputProps) {
+export default function Input({
+  id,
+  label,
+  onChange,
+  value,
+  children,
+  icon,
+  onClick,
+  onKeyDown,
+  disabled = false,
+  autoFocus = false,
+}: InputProps) {
+  const InputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    if (autoFocus && InputRef.current) {
+      InputRef.current.focus();
+    }
+  }, [disabled]);
   return (
     <Wrapper>
-      <Label htmlFor={id}>{label}</Label>
+      {label && <Label htmlFor={id}>{label}</Label>}
       <InputBox>
         <Text
           type="text"
           name={id}
           style={{ width: icon ? '260px' : '300px' }}
-          {...{ id, onChange, value, onKeyDown }}
+          ref={InputRef}
+          {...{ id, onChange, value, onKeyDown, disabled }}
         />
         {icon && (
           <IconButton type="button" {...{ onClick }}>

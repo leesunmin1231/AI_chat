@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { Configuration, OpenAIApi } from 'openai';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { addChat } from '@/db/model';
@@ -24,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
     const configuration = new Configuration({ apiKey });
     const openai = new OpenAIApi(configuration);
-    addChat(apiKey, bodyData.roomId, { speaker: 'user', message: bodyData.message });
+    addChat(apiKey, bodyData.roomId, { id: nanoid(), speaker: 'user', message: bodyData.message });
     openai
       .createChatCompletion({
         model: 'gpt-3.5-turbo',
@@ -32,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       })
       .then((completion) => {
         const response = completion.data.choices[0].message ? completion.data.choices[0].message.content : '';
-        const room = addChat(apiKey, bodyData.roomId, { speaker: 'AI', message: response });
+        const room = addChat(apiKey, bodyData.roomId, { id: nanoid(), speaker: 'AI', message: response });
         res.status(200).json({ message: 'success', roomData: room });
       })
       .catch((response) => {
