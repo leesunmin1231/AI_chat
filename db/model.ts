@@ -11,6 +11,7 @@ const __dirname = path.resolve();
 const dbPath = path.join(__dirname, './db/db.json');
 
 export const addUser = (apiKey: string) => {
+  console.log(dbPath);
   if (!fs.existsSync(dbPath)) {
     fs.writeFileSync(dbPath, `{"users":[]}`);
   }
