@@ -1,11 +1,4 @@
-import React, {
-  ChangeEventHandler,
-  ReactNode,
-  MouseEventHandler,
-  KeyboardEventHandler,
-  useRef,
-  useEffect,
-} from 'react';
+import React, { ChangeEventHandler, ReactNode, MouseEventHandler, KeyboardEventHandler, useRef } from 'react';
 import styled from '@emotion/styled';
 import Image from 'next/image';
 import { body, subtitle } from '@/styles/mixin';
@@ -19,28 +12,10 @@ interface InputProps {
   icon?: string;
   onClick?: MouseEventHandler;
   onKeyDown?: KeyboardEventHandler;
-  disabled?: boolean;
-  autoFocus?: boolean;
 }
 
-export default function Input({
-  id,
-  label,
-  onChange,
-  value,
-  children,
-  icon,
-  onClick,
-  onKeyDown,
-  disabled = false,
-  autoFocus = false,
-}: InputProps) {
+function Input({ id, label, onChange, value, children, icon, onClick, onKeyDown }: InputProps) {
   const InputRef = useRef<HTMLInputElement | null>(null);
-  useEffect(() => {
-    if (autoFocus && InputRef.current) {
-      InputRef.current.focus();
-    }
-  }, [autoFocus]);
   return (
     <Wrapper>
       {label && <Label htmlFor={id}>{label}</Label>}
@@ -50,7 +25,7 @@ export default function Input({
           name={id}
           style={{ width: icon ? '260px' : '300px' }}
           ref={InputRef}
-          {...{ id, onChange, value, onKeyDown, disabled }}
+          {...{ id, onChange, value, onKeyDown }}
         />
         {icon && (
           <IconButton type="button" {...{ onClick }}>
@@ -66,6 +41,8 @@ export default function Input({
 function Validate({ children }: { children: ReactNode }) {
   return <ValidateMessage>{children}</ValidateMessage>;
 }
+
+export default Input;
 
 Input.Validate = Validate;
 
