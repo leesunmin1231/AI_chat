@@ -8,6 +8,7 @@ import Room from '@/components/SelectRoom/Room';
 import RoomForm from '@/components/SelectRoom/RoomForm';
 import RoomUpdateModal from '@/components/SelectRoom/RoomUpdateModal';
 import { IconButton } from '@/styles/IconButton';
+import { subtitle } from '@/styles/mixin';
 import { initRoomForm } from '@/utils/constants';
 import { httpGet, httpPost } from '@/utils/http';
 
@@ -49,6 +50,13 @@ export default function SelectRoom() {
           {roomList.map((room) => (
             <Room key={room.id} {...{ ...room, setRoomForm }} />
           ))}
+          {roomList.length === 0 && (
+            <InfoText>
+              <div>방이 없어요!</div>
+              <div>오른쪽 상단에 + 버튼을 클릭해서</div>
+              <div>새로운 방을 생성해 보세요.</div>
+            </InfoText>
+          )}
           <RoomUpdateModal {...{ setRoomForm, setRoomList, roomForm }} />
         </Section>
       )}
@@ -80,4 +88,16 @@ const Section = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+const InfoText = styled.section`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  div {
+    ${subtitle}
+    line-height: 40px;
+  }
 `;

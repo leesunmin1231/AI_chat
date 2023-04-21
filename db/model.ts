@@ -11,6 +11,9 @@ const __dirname = path.resolve();
 const dbPath = path.join(__dirname, './db/db.json');
 
 export const addUser = (apiKey: string) => {
+  if (!fs.existsSync(dbPath)) {
+    fs.writeFileSync(dbPath, `{"users":[]}`);
+  }
   const file = fs.readFileSync(dbPath);
   const prevData: DataBase = JSON.parse(file.toString());
   const targetUser = prevData.users.filter((user) => user.apiKey === apiKey).at(0);
