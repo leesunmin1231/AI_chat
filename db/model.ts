@@ -75,7 +75,9 @@ export const addChat = (apiKey: string, roomId: string, newChat: ChatResponse[])
   );
   const updateData = prevData.users.map((user) => (user.apiKey === apiKey ? { ...user, rooms: roomData } : user));
   fs.writeFileSync(dbPath, JSON.stringify({ users: updateData }));
-  return roomData.filter((room) => room.id === roomId).at(0);
+  const returnRoomData = roomData.filter((room) => room.id === roomId).at(0);
+  if (!returnRoomData) return undefined;
+  return { ...returnRoomData, newChatList: newChat };
 };
 
 export const getRoomData = (apiKey: string, roomId: string) => {

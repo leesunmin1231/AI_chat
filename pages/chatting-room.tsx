@@ -28,7 +28,8 @@ export default function ChattingRoom({ id }: { id: string }) {
   };
 
   const AIConversation = async (aiMessage: ChatResponse[]) => {
-    if (isLoading) return;
+    const current = new Date();
+    if (isLoading || (clock && current.getTime() - clock.getTime() <= 30 * 1000)) return;
     const toSend = aiMessage.at(-1);
     if (toSend) {
       try {
@@ -48,7 +49,7 @@ export default function ChattingRoom({ id }: { id: string }) {
 
   const postChat = (toSend: string) => {
     const current = new Date();
-    if (isLoading || (clock && current.getTime() - clock.getTime() <= 60 * 1000)) {
+    if (isLoading || (clock && current.getTime() - clock.getTime() <= 30 * 1000)) {
       httpPost('/api/chat', {
         roomId: id,
         message: toSend,
@@ -64,7 +65,8 @@ export default function ChattingRoom({ id }: { id: string }) {
     httpPost('/api/chat', { roomId: id, message: toSend, speaker: 'user', sendOpenAI: true })
       .then((response) => {
         setMessage(response.roomData.chatList);
-        AIConversation(response.roomData.chatList);
+        const { newChatList } = response.roomData;
+        AIConversation(newChatList);
       })
       .catch(() => setErrorMessage(ERROR_MESSAGE))
       .finally(() => setIsLoading(false));
