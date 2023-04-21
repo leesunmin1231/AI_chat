@@ -50,7 +50,9 @@ export const updateRoom = (apiKey: string, newRoom: RoomType) => {
       : user
   );
   fs.writeFileSync(dbPath, JSON.stringify({ users: updateData }));
-  return userData[0].rooms;
+  const getRoom = updateData.filter((user) => user.apiKey === apiKey).at(0);
+  if (!getRoom) return [];
+  return getRoom.rooms;
 };
 
 export const deleteRoom = (apiKey: string, roomId: string) => {
@@ -62,7 +64,9 @@ export const deleteRoom = (apiKey: string, roomId: string) => {
     user.apiKey === apiKey ? { ...user, rooms: user.rooms.filter((room) => room.id !== roomId) } : user
   );
   fs.writeFileSync(dbPath, JSON.stringify({ users: updateData }));
-  return userData[0].rooms;
+  const getRoom = updateData.filter((user) => user.apiKey === apiKey).at(0);
+  if (!getRoom) return [];
+  return getRoom.rooms;
 };
 
 export const addChat = (apiKey: string, roomId: string, newChat: ChatResponse[]) => {
