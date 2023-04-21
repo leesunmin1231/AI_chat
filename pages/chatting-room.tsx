@@ -1,12 +1,14 @@
 import { KeyboardEvent, useEffect, useState, useRef, RefObject } from 'react';
 import { MdArrowBackIosNew } from 'react-icons/md';
 import styled from '@emotion/styled';
+import Image from 'next/image';
 import Router from 'next/router';
 import type { ChatResponse } from '@/types/ChatResponse';
 import Error from '@/components/common/Error';
 import Input from '@/components/common/Input';
+import Loading from '@/components/common/Loading';
 import { IconButton } from '@/styles/IconButton';
-import { body, title } from '@/styles/mixin';
+import { body, subtitle, title } from '@/styles/mixin';
 import { httpGet, httpPost } from '@/utils/http';
 
 const ERROR_MESSAGE = '요청 횟수가 너무 많습니다.\n잠시 기다린 후에 대화를 보내보세요.';
@@ -16,7 +18,6 @@ export default function ChattingRoom({ id }: { id: string }) {
   const [roomName, setRoomName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [clock, setClock] = useState<Date | null>(null);
   const [send, setSend] = useState('');
   const scrollRef: RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
 
@@ -27,46 +28,11 @@ export default function ChattingRoom({ id }: { id: string }) {
     setSend('');
   };
 
-  const AIConversation = async (aiMessage: ChatResponse[]) => {
-    const current = new Date();
-    if (isLoading || (clock && current.getTime() - clock.getTime() <= 30 * 1000)) return;
-    const toSend = aiMessage.at(-1);
-    if (toSend) {
-      try {
-        setClock(new Date());
-        const res = await httpPost('/api/chat', {
-          roomId: id,
-          message: toSend.message,
-          speaker: toSend.speaker,
-          sendOpenAI: true,
-        });
-        setMessage(res.roomData.chatList);
-      } catch {
-        setErrorMessage(ERROR_MESSAGE);
-      }
-    }
-  };
-
   const postChat = (toSend: string) => {
-    const current = new Date();
-    if (isLoading || (clock && current.getTime() - clock.getTime() <= 30 * 1000)) {
-      httpPost('/api/chat', {
-        roomId: id,
-        message: toSend,
-        speaker: 'user',
-        sendOpenAI: false,
-      })
-        .then((response) => setMessage(response.roomData.chatList))
-        .catch(() => setErrorMessage(ERROR_MESSAGE));
-      return;
-    }
     setIsLoading(true);
-    setClock(new Date());
     httpPost('/api/chat', { roomId: id, message: toSend, speaker: 'user', sendOpenAI: true })
       .then((response) => {
         setMessage(response.roomData.chatList);
-        const { newChatList } = response.roomData;
-        AIConversation(newChatList);
       })
       .catch(() => setErrorMessage(ERROR_MESSAGE))
       .finally(() => setIsLoading(false));
@@ -106,6 +72,10 @@ export default function ChattingRoom({ id }: { id: string }) {
         {message.map((data) =>
           data.speaker.includes('AI') ? (
             <Row key={data.id}>
+              <Profile>
+                <Image src="/Logo.svg" alt="profile-img" width={30} height={30} />
+                <div>{data.speaker}</div>
+              </Profile>
               <Chat isAI>{data.message}</Chat>
             </Row>
           ) : (
@@ -113,6 +83,16 @@ export default function ChattingRoom({ id }: { id: string }) {
               <Chat isAI={false}>{data.message}</Chat>
             </Row>
           )
+        )}
+        {isLoading && (
+          <Row>
+            <Profile>
+              <Image src="/Logo.svg" alt="profile-img" width={30} height={30} />
+            </Profile>
+            <Chat isAI>
+              <Loading size={40} />
+            </Chat>
+          </Row>
         )}
       </ChatContainer>
       <SendContainer>
@@ -182,13 +162,32 @@ const Row = styled.div`
   padding: 5px 10px;
 `;
 
+const Profile = styled.div`
+  height: 40px;
+  line-height: 40px;
+  display: flex;
+  img {
+    border-radius: 50%;
+    background-color: ${({ theme }) => theme.color.white};
+    margin-right: 10px;
+  }
+  div {
+    ${subtitle}
+    margin-bottom: 10px;
+  }
+`;
+
 const Chat = styled.div<{ isAI: boolean }>`
   ${body}
+  line-height: 20px;
   color: ${({ theme }) => theme.color.black};
   background-color: ${({ theme, isAI }) => (isAI ? theme.color.primary : theme.color.offwhite)};
   float: ${({ isAI }) => (isAI ? 'left' : 'right')};
   width: fit-content;
   max-width: 250px;
-  padding: 15px;
+  padding: 10px;
   border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

@@ -12,7 +12,7 @@ export const FONT = {
     weight: 700,
   },
   body: {
-    size: '12px',
+    size: '14px',
     color: COLOR.white,
     weight: 500,
   },

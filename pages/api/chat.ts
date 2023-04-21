@@ -44,7 +44,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         model: 'gpt-3.5-turbo',
         messages: [
           { role: 'user', content: bodyData.message },
-          { role: 'system', content: '한글로 대답해줘' },
+          {
+            role: 'system',
+            content: `${
+              Number(prevRoomData.people) - 1
+            }명의 챗봇과 1명의 user가 대화하는 상황이야. 너는 챗봇이야. user의 content에 대한 대답을 하거나 이전 chat completion choice content에 대한 대답을 하면 돼.`,
+          },
         ],
         n: bodyData.speaker === 'user' ? Number(prevRoomData.people) - 1 : Number(prevRoomData.people) - 2,
         presence_penalty: 1.0,
@@ -55,13 +60,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         bodyData.roomId,
         completion.data.choices.map((choice, index) => ({
           id: nanoid(),
-          speaker: `AI ${index}`,
+          speaker: `AI ${index + 1}`,
           message: choice.message ? choice.message.content : '',
         }))
       );
       res.status(200).json({ message: 'success', roomData: room });
     } catch (e: any) {
-      res.status(429).json({ message: e });
+      const room = addChat(apiKey, bodyData.roomId, [
+        { id: nanoid(), speaker: `AI system`, message: '요청 횟수가 너무 많습니다. 잠시 기다린 후에 입력해주세요.' },
+      ]);
+      res.status(200).json({ message: 'success', roomData: room });
     }
   }
   if (req.method === 'GET') {
