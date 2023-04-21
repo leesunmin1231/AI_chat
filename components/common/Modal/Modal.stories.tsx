@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTheme } from '@emotion/react';
 import Modal from '.';
 import Button from '../Button';
 
@@ -12,15 +13,17 @@ export function Default() {
   const toggleHandler = () => {
     setIsOpen(!isOpen);
   };
+  const { color } = useTheme();
+  const { white } = color;
   return (
     <>
       <Button size="large" onClick={toggleHandler}>
         open
       </Button>
       <Modal {...{ isOpen }} onClose={toggleHandler}>
-        <p>Content1</p>
-        <p>Content2</p>
-        <p>Content3</p>
+        <p style={{ color: white }}>Content1</p>
+        <p style={{ color: white }}>Content2</p>
+        <p style={{ color: white }}>Content3</p>
         <Button size="small" onClick={toggleHandler}>
           close
         </Button>

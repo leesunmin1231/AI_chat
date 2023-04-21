@@ -2,37 +2,55 @@ import React, { useEffect, useState } from 'react';
 import { HiOutlinePlus, HiOutlineMinus } from 'react-icons/hi';
 import styled from '@emotion/styled';
 import Image from 'next/image';
-import RoomForm from '@/components/RoomForm';
+import type { RoomType } from '@/types/RoomResponse';
+import Button from '@/components/common/Button';
+import Room from '@/components/SelectRoom/Room';
+import RoomForm from '@/components/SelectRoom/RoomForm';
+import RoomUpdateModal from '@/components/SelectRoom/RoomUpdateModal';
+import { IconButton } from '@/styles/IconButton';
+import { initRoomForm } from '@/utils/constants';
 import { httpGet, httpPost } from '@/utils/http';
 
-type Room = {
-  name: string;
-  people: number;
-};
 export default function SelectRoom() {
-  const [roomList, setRoomList] = useState<Room[]>([]);
+  const [roomList, setRoomList] = useState<Omit<RoomType, 'chatList'>[]>([]);
+  const [roomForm, setRoomForm] = useState<Omit<RoomType, 'chatList'>>(initRoomForm);
   const [addNewRoom, setAddNewRoom] = useState(false);
+
   useEffect(() => {
     httpGet('/api/roomlist').then((data) => setRoomList(data.list));
-  });
-  const addRoomHandler = () => {
-    setAddNewRoom(!addNewRoom);
+  }, []);
+  useEffect(() => {
+    setRoomForm(initRoomForm);
+  }, [roomList]);
+
+  const postRoomHandler = () => {
+    httpPost('/api/roomlist', roomForm).then((response) => {
+      setRoomList(response.list);
+      setAddNewRoom(false);
+    });
   };
   return (
     <Wrapper>
       <Header>
         <Image src="/Title.svg" width={100} height={50} alt="title" />
-        <AddButton onClick={addRoomHandler}>{addNewRoom ? <HiOutlineMinus /> : <HiOutlinePlus />}</AddButton>
+        <IconButton onClick={() => setAddNewRoom(!addNewRoom)}>
+          {addNewRoom ? <HiOutlineMinus /> : <HiOutlinePlus />}
+        </IconButton>
       </Header>
       {addNewRoom ? (
-        <RoomForm />
+        <Section>
+          <RoomForm {...{ setRoomForm, roomForm }} />
+          <Button size="large" onClick={postRoomHandler}>
+            방 생성
+          </Button>
+        </Section>
       ) : (
-        roomList.map((room) => (
-          <li>
-            <span>{room.name}</span>
-            <span>{room.people}</span>
-          </li>
-        ))
+        <Section>
+          {roomList.map((room) => (
+            <Room key={room.id} {...{ ...room, setRoomForm }} />
+          ))}
+          <RoomUpdateModal {...{ setRoomForm, setRoomList, roomForm }} />
+        </Section>
       )}
     </Wrapper>
   );
@@ -52,27 +70,14 @@ const Header = styled.header`
   justify-content: space-between;
   padding: 10px 30px;
   align-items: center;
+  border-bottom: 1px solid ${({ theme }) => theme.color.gray400};
 `;
 
-const AddButton = styled.button`
-  width: 30px;
-  height: 30px;
-  color: ${({ theme }) => theme.color.white};
-  background-color: ${({ theme }) => theme.color.black};
-  border: 0;
-  border-radius: 30px;
-  cursor: pointer;
-  @media (hover: hover) {
-    &:hover {
-      background-color: ${({ theme }) => theme.color.black};
-      filter: brightness(0.7);
-    }
-  }
-  &:active {
-    filter: brightness(0.5);
-  }
-  svg {
-    width: 100%;
-    height: 100%;
-  }
+const Section = styled.section`
+  width: 100%;
+  flex: 1;
+  margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
