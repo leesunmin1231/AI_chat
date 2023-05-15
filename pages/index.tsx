@@ -33,6 +33,7 @@ export default function Login() {
         <Link href="https://platform.openai.com/docs/api-reference/authentication" target="_blank">
           KEY 발급받는 방법
         </Link>
+        <Link href="/test">test</Link>
       </Footer>
       <Error {...{ errorMessage, setErrorMessage }} />
     </Wrapper>
@@ -59,6 +60,8 @@ const LoginForm = styled.form`
 const Footer = styled.footer`
   height: 8%;
   padding-top: 4%;
+  display: flex;
+  flex-direction: column;
   a {
     color: ${({ theme }) => theme.color.white};
     text-decoration: underline;

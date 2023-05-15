@@ -14,7 +14,7 @@ interface InputProps {
   onKeyDown?: KeyboardEventHandler;
 }
 
-function Input({ id, label, onChange, value, children, icon, onClick, onKeyDown }: InputProps) {
+export default function Input({ id, label, onChange, value, children, icon, onClick, onKeyDown }: InputProps) {
   const InputRef = useRef<HTMLInputElement | null>(null);
   return (
     <Wrapper>
@@ -41,8 +41,6 @@ function Input({ id, label, onChange, value, children, icon, onClick, onKeyDown 
 function Validate({ children }: { children: ReactNode }) {
   return <ValidateMessage>{children}</ValidateMessage>;
 }
-
-export default Input;
 
 Input.Validate = Validate;
 
