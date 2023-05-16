@@ -33,7 +33,6 @@ export default function Login() {
         <Link href="https://platform.openai.com/docs/api-reference/authentication" target="_blank">
           KEY 발급받는 방법
         </Link>
-        <Link href="/test">test</Link>
       </Footer>
       <Error {...{ errorMessage, setErrorMessage }} />
     </Wrapper>
