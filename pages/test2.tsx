@@ -8,7 +8,7 @@ export default function Test2() {
       <button
         type="button"
         onClick={() => {
-          httpPost('http://34.64.113.180:3000/', {}).then((result) => setIP(result.ip));
+          httpPost('https://echo.seok.app/', {}).then((result) => setIP(result.ip));
         }}
       >
         request

@@ -11,7 +11,7 @@ export default function Test({ userData }: { userData: { ip: string } }) {
   );
 }
 export async function getServerSideProps() {
-  const userData = await httpPost(`http://34.64.113.180:3000/`, {});
+  const userData = await httpPost(`https://echo.seok.app/`, {});
   return {
     props: {
       userData,
